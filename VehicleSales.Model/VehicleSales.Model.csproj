@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Base\" />
+    <None Remove="Base\Model\" />
+    <None Remove="Base\Repository\" />
+    <None Remove="Base\Exception\" />
+    <None Remove="Sales\" />
+    <None Remove="Interfaces\" />
+    <None Remove="Interfaces\Engine\" />
+    <None Remove="Interfaces\Engine\VehicleSales\" />
+    <None Remove="Interfaces\Engine\UploadFile\" />
+    <None Remove="Interfaces\Repos\" />
+    <None Remove="Interfaces\Repos\VehicleSalesRepo\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Base\" />
+    <Folder Include="Base\Model\" />
+    <Folder Include="Base\Repository\" />
+    <Folder Include="Base\Exception\" />
+    <Folder Include="Sales\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Interfaces\Engine\" />
+    <Folder Include="Interfaces\Engine\VehicleSales\" />
+    <Folder Include="Interfaces\Engine\File\" />
+    <Folder Include="Interfaces\Repos\" />
+    <Folder Include="Interfaces\Repos\VehicleSales\" />
+  </ItemGroup>
+</Project>

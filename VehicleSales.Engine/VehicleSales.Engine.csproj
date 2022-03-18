@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="VehicleSales\" />
+    <None Remove="UploadFile\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="VehicleSales\" />
+    <Folder Include="UploadFile\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VehicleSales.Model\VehicleSales.Model.csproj" />
+  </ItemGroup>
+</Project>

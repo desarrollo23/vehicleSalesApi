@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Base\" />
+    <None Remove="Base\Context\" />
+    <None Remove="Microsoft.EntityFrameworkCore" />
+    <None Remove="Base\Repository\" />
+    <None Remove="Repos\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Base\" />
+    <Folder Include="Base\Context\" />
+    <Folder Include="Base\Repository\" />
+    <Folder Include="Repos\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.15" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VehicleSales.Model\VehicleSales.Model.csproj" />
+  </ItemGroup>
+</Project>
