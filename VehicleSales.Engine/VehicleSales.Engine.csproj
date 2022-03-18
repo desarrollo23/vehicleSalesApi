@@ -7,6 +7,9 @@
   <ItemGroup>
     <None Remove="VehicleSales\" />
     <None Remove="UploadFile\" />
+    <None Remove="Microsoft.AspNetCore.Http" />
+    <None Remove="ExcelDataReader" />
+    <None Remove="System.Text.Encoding.CodePages" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="VehicleSales\" />
@@ -14,5 +17,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VehicleSales.Model\VehicleSales.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
 </Project>

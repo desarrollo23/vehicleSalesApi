@@ -21,10 +21,19 @@ namespace VehicleSalesApi.Controllers
         }
 
         [HttpPost, DisableRequestSizeLimit]
-        public IActionResult UploadFile()
+        public async Task<IActionResult> UploadFile()
         {
-            _uploadFileEngine.Upload();
-            return Ok();
+            var formCollection = await Request.ReadFormAsync();
+            var file = formCollection.Files.First();
+
+            if (file.Length > 0)
+            {
+                _uploadFileEngine.SetParameters(file);
+                _uploadFileEngine.ProcessFile();
+                return Ok();
+            }
+            else
+                return BadRequest();
         }
     }
 }

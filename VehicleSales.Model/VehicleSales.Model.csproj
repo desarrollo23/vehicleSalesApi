@@ -16,6 +16,7 @@
     <None Remove="Interfaces\Engine\UploadFile\" />
     <None Remove="Interfaces\Repos\" />
     <None Remove="Interfaces\Repos\VehicleSalesRepo\" />
+    <None Remove="Microsoft.AspNetCore.Http" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Base\" />
@@ -29,5 +30,8 @@
     <Folder Include="Interfaces\Engine\File\" />
     <Folder Include="Interfaces\Repos\" />
     <Folder Include="Interfaces\Repos\VehicleSales\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
 </Project>

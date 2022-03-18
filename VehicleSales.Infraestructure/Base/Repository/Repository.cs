@@ -30,6 +30,19 @@ namespace VehicleSales.Infraestructure.Base.Repository
             }
         }
 
+        public void AddRange(List<T> entities)
+        {
+            try
+            {
+                _myDbContext.AddRange(entities);
+                _myDbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new EntityException(ex.Message, ex);
+            }
+        }
+
         public virtual void Delete(int id)
         {
             try
