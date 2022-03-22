@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using VehicleSales.Common.Filters.Response;
 using VehicleSales.Engine.UploadFile;
 using VehicleSales.Engine.VehicleSales;
 using VehicleSales.Infraestructure.Base.Context;
@@ -60,8 +59,6 @@ namespace VehicleSalesApi
                 o.MultipartBodyLengthLimit = int.MaxValue;
                 o.MemoryBufferThreshold = int.MaxValue;
             });
-
-            services.AddTransient<ResponseFilter>();
             
             services.AddCors(opt =>
             {
