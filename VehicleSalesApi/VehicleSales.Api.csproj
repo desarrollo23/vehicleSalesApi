@@ -25,5 +25,8 @@
     <ProjectReference Include="..\VehicleSales.Engine\VehicleSales.Engine.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\VehicleSales.Common\VehicleSales.Common.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

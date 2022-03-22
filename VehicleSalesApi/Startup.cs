@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using VehicleSales.Common.Filters.Response;
 using VehicleSales.Engine.UploadFile;
 using VehicleSales.Engine.VehicleSales;
 using VehicleSales.Infraestructure.Base.Context;
@@ -27,6 +28,8 @@ namespace VehicleSalesApi
 {
     public class Startup
     {
+        private const string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -57,6 +60,17 @@ namespace VehicleSalesApi
                 o.MultipartBodyLengthLimit = int.MaxValue;
                 o.MemoryBufferThreshold = int.MaxValue;
             });
+
+            services.AddTransient<ResponseFilter>();
+            
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy(name: MyAllowSpecificOrigins,
+                      builder =>
+                      {
+                          builder.WithOrigins("http://localhost:4200");
+                      });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,13 +83,6 @@ namespace VehicleSalesApi
 
             app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"StaticFiles")),
-                RequestPath = new PathString("/StaticFiles")
-            });
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -83,7 +90,7 @@ namespace VehicleSalesApi
             });
 
             app.UseRouting();
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

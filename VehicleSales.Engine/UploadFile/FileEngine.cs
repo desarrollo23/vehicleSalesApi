@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http.Headers;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
+using VehicleSales.Model.Base.Exception;
 using VehicleSales.Model.Interfaces.Engine.File;
 using VehicleSales.Model.Interfaces.Repos.VehicleSales;
 using VehicleSales.Model.Sales;
@@ -30,24 +31,45 @@ namespace VehicleSales.Engine.UploadFile
         public void ProcessFile()
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            bool isHeader = true;
 
-            List<VehicleSale> vehicleSales = new List<VehicleSale>();
+            List<VehicleSale> vehicleSales = new();
 
             using (var stream = System.IO.File.Open(_fullPath, FileMode.Open, FileAccess.Read))
             {
-                using var reader = ExcelReaderFactory.CreateReader(stream);
-                while (reader.Read())
+                try
                 {
-                    vehicleSales.Add(new VehicleSale
+                    using var reader = ExcelReaderFactory.CreateCsvReader(stream);
+                    while (reader.Read())
                     {
-                        DealNumber = int.Parse(reader.GetValue(0).ToString()),
-                        CustomerName = reader.GetValue(1).ToString(),
-                        DealershipName = reader.GetValue(2).ToString(),
-                        Vehicle = reader.GetValue(3).ToString(),
-                        Price = decimal.Parse(reader.GetValue(4).ToString()),
-                        Date = System.DateTime.Parse(reader.GetValue(5).ToString())
-                    });
+                        if (isHeader)
+                        {
+                            isHeader = false;
+                            continue;
+                        };
+
+                        var vehicleSale = new VehicleSale
+                        {
+                            DealNumber = int.Parse(reader.GetValue(0).ToString()),
+                            CustomerName = reader.GetValue(1).ToString(),
+                            DealershipName = reader.GetValue(2).ToString(),
+                            Vehicle = reader.GetValue(3).ToString(),
+                            Price = decimal.Parse(reader.GetValue(4).ToString()),
+                            Date = System.DateTime.Parse(reader.GetValue(5).ToString())
+                        };
+
+                        if (ValidateVehicleSaleExists(vehicleSale.DealNumber))
+                            continue;
+
+                        vehicleSales.Add(vehicleSale);
+
+                    }
                 }
+                catch (System.Exception ex)
+                {
+                    throw new EntityException(ex.Message, ex);
+                }
+                
             }
 
             _vehicleSalesRepo.AddRange(vehicleSales);
@@ -62,8 +84,26 @@ namespace VehicleSales.Engine.UploadFile
             var fileName = ContentDispositionHeaderValue.Parse(_file.ContentDisposition).FileName.Trim('"');
             _fullPath = Path.Combine(pathToSave, fileName);
 
-            using var stream = new FileStream(_fullPath, FileMode.Create);
-            _file.CopyTo(stream);
+            try
+            {
+                using var stream = new FileStream(_fullPath, FileMode.Create);
+                _file.CopyTo(stream);
+            }
+            catch (System.Exception ex)
+            {
+                throw new EntityException(ex.Message, ex);
+            }
+            
+        }
+
+        private bool ValidateVehicleSaleExists(int dealNumber)
+        {
+            var vehicleSale = _vehicleSalesRepo.FindBy(x => x.DealNumber == dealNumber);
+
+            if (vehicleSale != null)
+                return true;
+
+            return false;
         }
     }
 }
