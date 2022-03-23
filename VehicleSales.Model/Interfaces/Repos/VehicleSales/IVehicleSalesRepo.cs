@@ -6,5 +6,6 @@ namespace VehicleSales.Model.Interfaces.Repos.VehicleSales
 {
     public interface IVehicleSalesRepo: IRepository<VehicleSale>
     {
+        VehicleSale GetByDealNumber(int dealNumber);
     }
 }

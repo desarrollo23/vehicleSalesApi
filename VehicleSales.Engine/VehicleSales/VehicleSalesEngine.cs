@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using VehicleSales.Model.Interfaces.Engine.VehicleSales;
 using VehicleSales.Model.Interfaces.Repos.VehicleSales;
 using VehicleSales.Model.Sales;
+using VehicleSales.Common.Response;
 
 namespace VehicleSales.Engine.VehicleSales
 {
@@ -16,14 +17,16 @@ namespace VehicleSales.Engine.VehicleSales
             _vehicleSalesRepo = vehicleSalesRepo;
         }
 
-        public void Create(VehicleSale request)
+        public EntityResponse Create(VehicleSale request)
         {
             _vehicleSalesRepo.Add(request);
+            return EntityResponse.Create(System.Net.HttpStatusCode.OK);
         }
 
-        public List<VehicleSale> GetVehicleSales()
+        public EntityResponse GetVehicleSales()
         {
-            return _vehicleSalesRepo.FindAll().ToList();
+            var vehicleSalesList = _vehicleSalesRepo.FindAll().ToList();
+            return EntityResponse.Create(System.Net.HttpStatusCode.OK, vehicleSalesList);
         }
     }
 }

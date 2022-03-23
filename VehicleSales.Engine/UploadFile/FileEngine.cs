@@ -1,9 +1,12 @@
 ﻿
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net.Http.Headers;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
+using VehicleSales.Common.Response;
 using VehicleSales.Model.Base.Exception;
 using VehicleSales.Model.Interfaces.Engine.File;
 using VehicleSales.Model.Interfaces.Repos.VehicleSales;
@@ -11,7 +14,7 @@ using VehicleSales.Model.Sales;
 
 namespace VehicleSales.Engine.UploadFile
 {
-    public class FileEngine: IFileEngine
+    public class FileEngine : IFileEngine
     {
         private readonly IVehicleSalesRepo _vehicleSalesRepo;
         private IFormFile _file;
@@ -28,10 +31,9 @@ namespace VehicleSales.Engine.UploadFile
             Upload();
         }
 
-        public void ProcessFile()
+        public EntityResponse ProcessFile()
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            bool isHeader = true;
 
             List<VehicleSale> vehicleSales = new();
 
@@ -42,11 +44,9 @@ namespace VehicleSales.Engine.UploadFile
                     using var reader = ExcelReaderFactory.CreateCsvReader(stream);
                     while (reader.Read())
                     {
-                        if (isHeader)
-                        {
-                            isHeader = false;
+                        if (reader.GetValue(0).ToString().Equals("DealNumber") 
+                            || ValidateVehicleSaleExists(int.Parse(reader.GetValue(0).ToString())))
                             continue;
-                        };
 
                         var vehicleSale = new VehicleSale
                         {
@@ -55,31 +55,31 @@ namespace VehicleSales.Engine.UploadFile
                             DealershipName = reader.GetValue(2).ToString(),
                             Vehicle = reader.GetValue(3).ToString(),
                             Price = decimal.Parse(reader.GetValue(4).ToString()),
-                            Date = System.DateTime.Parse(reader.GetValue(5).ToString())
+                            Date = Convert.ToDateTime(reader.GetValue(5).ToString(),
+                            System.Globalization.CultureInfo.GetCultureInfo("en-US").DateTimeFormat)
                         };
 
-                        if (ValidateVehicleSaleExists(vehicleSale.DealNumber))
-                            continue;
-
                         vehicleSales.Add(vehicleSale);
-
                     }
                 }
                 catch (System.Exception ex)
                 {
-                    throw new EntityException(ex.Message, ex);
+                    return EntityResponse.Create(System.Net.HttpStatusCode.InternalServerError, ex, ex.Message);
                 }
-                
             }
 
             _vehicleSalesRepo.AddRange(vehicleSales);
 
+            return EntityResponse.Create(System.Net.HttpStatusCode.Created);
         }
 
         private void Upload()
         {
             var folderName = Path.Combine("Resources", "Files");
             var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+            if (!Directory.Exists(pathToSave))
+                Directory.CreateDirectory(pathToSave);
 
             var fileName = ContentDispositionHeaderValue.Parse(_file.ContentDisposition).FileName.Trim('"');
             _fullPath = Path.Combine(pathToSave, fileName);
@@ -93,12 +93,12 @@ namespace VehicleSales.Engine.UploadFile
             {
                 throw new EntityException(ex.Message, ex);
             }
-            
+
         }
 
         private bool ValidateVehicleSaleExists(int dealNumber)
         {
-            var vehicleSale = _vehicleSalesRepo.FindBy(x => x.DealNumber == dealNumber);
+            var vehicleSale = _vehicleSalesRepo.GetByDealNumber(dealNumber);
 
             if (vehicleSale != null)
                 return true;

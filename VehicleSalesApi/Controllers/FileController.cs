@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using VehicleSales.Common.Response;
 using VehicleSales.Model.Interfaces.Engine.File;
 
 namespace VehicleSalesApi.Controllers
@@ -19,16 +21,17 @@ namespace VehicleSalesApi.Controllers
         }
 
         [HttpPost, DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadFile()
+        public ActionResult<EntityResponse> UploadFile()
         {
-            var formCollection = await Request.ReadFormAsync();
+            var formCollection = Request.ReadFormAsync().Result;
             var file = formCollection.Files.First();
 
             if (file.Length > 0)
             {
                 _uploadFileEngine.SetParameters(file);
-                _uploadFileEngine.ProcessFile();
-                return Ok();
+                var response =_uploadFileEngine.ProcessFile();
+
+                return Ok(response);
             }
             else
                 return BadRequest();
